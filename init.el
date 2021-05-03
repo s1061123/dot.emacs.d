@@ -20,7 +20,8 @@
 
 ;; add packages with el-get
 (el-get-bundle init-loader)
-(el-get-bundle howm)
+(when (not (eq system-type 'windows-nt)); windows
+  (el-get-bundle howm))
 (el-get-bundle elscreen)
 (el-get-bundle ddskk)
 (el-get-bundle wanderlust)
@@ -52,32 +53,48 @@
   (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
       (normal-top-level-add-subdirs-to-load-path)))
 
-(let ((default-directory (expand-file-name "~/usr/share/emacs/site-lisp")))
+(when (not (eq system-type 'windows-nt)); not windows
+  (let ((default-directory (expand-file-name "~/usr/share/emacs/site-lisp")))
   (add-to-list 'load-path default-directory)
   (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
-      (normal-top-level-add-subdirs-to-load-path)))
-
+      (normal-top-level-add-subdirs-to-load-path))))
 
 ;;実際に横幅が 1:2 になるのは、12pt, 13.5pt, 15pt など、1.5の倍数なので、
 ;;それに合わせるのがおすすめ。
-(add-to-list 'default-frame-alist '(font . "ricty-13.5"))
+;(add-to-list 'default-frame-alist '(font . "ricty-13.5"))
 ;; move it somewhere... (TODO)
 ;(set-fontset-font nil 'japanese-jisx0208 (font-spec :family "ricty"))
 
-;; for lookup
-(define-key ctl-x-map "l" 'lookup)
-(define-key ctl-x-map "y" 'lookup-region)
-(define-key ctl-x-map "\C-y" 'lookup-pattern)
-(global-set-key "\C-cw" 'lookup-pattern)
+;; フォントをどうにかしないと…
+;; http://bty-diary.sblo.jp/article/186145927.html
+;; https://pod.hatenablog.com/entry/2019/01/07/044238
+;; https://sidestory.pandanote.info/hackgennerd.html
+;; https://nosubject.io/windows10-emacs-27-font-configuration/
+;; http://xiuxing.blog.jp/archives/8346924.html
+;; フォントをRictyに
+(when (eq system-type 'windows-nt); windows
+  (set-face-attribute 'default nil
+                      :family "Ricty Diminished"
+                      :height 120)
+  ;; 行間を指定
+  (setq-default line-spacing 0.2)
+  (cd "~/"))
 
-;;
-(load "lookup-autoloads")
-(setq lookup-search-agents
-      '(
-	(ndeb "~/dic" :coding sjis-dos :alias "dics")
+;; XXX
+;; for lookup
+;(define-key ctl-x-map "l" 'lookup)
+;(define-key ctl-x-map "y" 'lookup-region)
+;(define-key ctl-x-map "\C-y" 'lookup-pattern)
+;(global-set-key "\C-cw" 'lookup-pattern)
+
+;; XXX
+;(load "lookup-autoloads")
+;(setq lookup-search-agents
+;      '(
+;	(ndeb "~/dic" :coding sjis-dos :alias "dics")
 ;;	(ndeb "c:/tom/dic/dic/eijiro" :coding sjis-dos :alias "dics")
 ;;	(ndeb "c:/tom/dic/dic/waeijiro" :coding sjis-dos :alias "dics")
-	(ndspell)
-	))
+;	(ndspell)
+;	))
 
 (server-start)
